@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lora:wght@500&display=swap');
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-image: url('/JS/JS_Typing_Game/synthwave.gif');
+            background-size: 100vw;
+            background-repeat: repeat-y;
+            color: white;
+        }
+
+        button {
+            position: absolute;
+            top: 65%;
+            left: 51%;
+            transform: translate(-50%, -50%);
+            background-color: rgb(43, 72, 201);
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            border: none;
+            border-radius: 20px;
+            outline: none;
+            scale: 150%;
+            border: 2px solid rgb(255, 255, 255);
+            box-shadow: 10px 10px 10px black;
+        }
+
+        button:hover{
+            box-shadow: 5px 5px 10px rgb(0, 0, 0);
+            scale: 140%;
+        }
+
+        input {
+            padding: 15px;
+            font-size: 1.5rem;
+            display: flex;
+            width: 70%;
+            transform: translateY(200px);
+            margin: 10px auto;
+            border-radius: 20px;
+            border: 5px solid rgb(159, 4, 255);
+            outline: none;
+            background: none;
+            color: white;
+        }
+
+        #main-heading {
+            text-align: center;
+            transform: translateY(30vh);
+            opacity: 90%;
+            font-family: 'Lora', serif;
+            font-size: 300%;
+        }
+
+        #stats {
+            display: block;
+            margin: 0 auto;
+            width: fit-content;
+            padding: 10px;
+            opacity: 90%;
+        }
+
+        .hide {
+        display: none !important;
+        }
+
+        #text-display{
+            font-size: 3rem;
+            text-align: center;
+            transform: translateY(200px);
+            opacity: 90%;
+            margin: 0 auto;
+        }
+
+        .typed-word{
+            padding: 5px;
+            display: inline-block;
+            box-sizing: border-box;
+            margin: 10px 20px;
+            scale: 150%;
+            position: relative;
+        }
+
+        #cat-gif{
+            position: sticky;
+            display: flex;
+            transform: translate(40vw, 30vh);
+        }
+
+        @media screen and (max-width: 500px) {
+            #cat-gif{
+                transform: translate(15vw, 30vh);
+            }
+        }
+
+        .typing{
+            text-align: center;
+            transform: translateY(30vh);
+            opacity: 90%;
+        }
+
+        .typing::after{
+            content: "";
+            position: absolute;
+            width: 1px;
+            height: 90%;
+            border-right: 2px solid white;
+            margin-left: 2px;
+            animation: 0.5s blink infinite ease;
+        }
+
+        @keyframes blink {
+            0%{
+                opacity: 0;
+            }
+            100%{
+                opacity: 1;
+            }
+        }
+
+        .bg-gif{
+            scale: 670%;
+            transform: translate(50px, 45px);
+        }
+
+    </style>
+</head>
+
+<body>
+    <audio autoplay loop>
+        <source src="/JS/JS_Typing_Game/bg-loop.mp3" type="audio/mp3">
+    </audio>
+    <header>
+        <article id="stats" class="hide"> 
+            <p>WPM: <span id="wpm-display"></span></p>
+            <p>Score: <span id="score-display"></span></p>
+            <p>Time Left: <span id="time-display"></span></p>
+        </article>
+        <h1 id="main-heading">The best typing game ever...</h1>
+        <h1 id="typing-main-heading" class="typing">hi</h1>
+    </header>
+
+    <main>
+        <section id="main-section">
+
+            <article id="main-content"></article>
+
+            <button id="button">Start Game</button>
+
+            <article id="text-display"></article>
+
+            <form id="form">
+                <input type="text" id="input" class="hide" placeholder="Type Here..." >
+                <iframe id="cat-gif" class="hide" src="https://gifer.com/embed/1P7H" frameBorder="0"></iframe></div>
+            </form>
+
+        </section>
+    </main>
+<script src="/JS/JS_Typing_Game/random-words.js"></script>
+<script>
+
+// click on the start game button
+    const startGameButton = document.getElementById('button');
+    const statsContent = document.getElementById('stats');
+    const input = document.getElementById('input')
+    const splittedAlice = alice.split(' ')
+    const textDisplay = document.getElementById('text-display')
+    const form = document.getElementById('form')
+    const timeDisplay = document.getElementById('time-display')
+    const scoreDisplay = document.getElementById('score-display')
+    const wpmDisplay = document.getElementById('wpm-display')
+    const mainContent = document.getElementById('main-content')
+    const catGif = document.getElementById('cat-gif')
+    const mainHeading = document.getElementById('main-heading')
+    const typingMainHeading = document.getElementById('typing-main-heading')
+
+    const texts = ['loteraly', 'literally  yes', 'seriously', 'not  kidding', 'try  it', 'go   ahead']
+    let count = 0;
+    let index = 0;
+    let currentText = '';
+    let letter = '';
+
+    (function type(){
+        if(count === texts.length){
+            count = 0;
+        }
+        currentText = texts[count];
+        letter = currentText.slice(0,++index);
+
+        document.querySelector('.typing').textContent = letter;
+        if(letter.length === currentText.length){
+            count++;
+            index = 0;
+        }
+        setTimeout(type, 200);
+    }())
+
+
+    const state = {
+        currentWord: '',
+        score: 0,
+        timeElapsed: 0,
+        gameLength : 60,
+    }
+    
+    
+    function createWordSpan(color, content){
+        const span = document.createElement('span')
+        const style = 'background-color: ' + color
+        span.setAttribute('style', style)
+        span.setAttribute('class', 'typed-word')
+    
+        span.textContent = content
+        return span
+    } 
+    
+    form.addEventListener('submit', function(event){
+        event.preventDefault()
+// when user enter an input 
+    const userInput = input.value
+//if user enter nothing then do nothing
+    if(userInput === ''){
+        return;
+    }
+// check if correct 
+    const isCorrect = userInput === state.currentWord
+
+    let span
+    if(isCorrect){
+        // if correct, add the word to the result list with gre en color bg
+        // add 1 to user score 
+        span = createWordSpan('darkgreen', userInput)
+        state.score += 1
+    }else{
+        // if not correct then add the word to red bg 
+        span = createWordSpan('red', userInput)
+    }
+    
+    mainContent.appendChild(span)
+// clear user input after he has enter the input
+    input.value = ''
+// show the next word
+    nextWord()
+    renderStats()
+    })
+
+
+//above the words were only stored i the DOM but we also need them to be stored in the JS to compare whats right and whats wronng 
+// lets create the function that randomgenerates the word from alice
+    function getRandomWord(){
+        return splittedAlice[ Math.floor(Math.random() * splittedAlice.length) ] 
+    }
+    function nextWord(){
+        const word = getRandomWord()
+        textDisplay.textContent = word
+        state.currentWord = word
+    }
+
+    startGameButton.addEventListener('click', function(event) {
+        event.preventDefault()
+// hide the button
+    startGameButton.className = 'hide'; 
+//main heading
+    mainHeading.className = 'hide'
+//typing main heading
+    typingMainHeading.className = 'hide'
+// show the stats
+    statsContent.className = '';
+// show the input field
+    input.className = ''   
+// show cat gif
+    catGif.className = ''
+// focus on input field
+    input.focus()
+// show the words
+    nextWord()
+// start timer
+    startClock()
+    })
+
+
+function renderStats() {
+    // time remaning
+    timeDisplay.textContent = state.gameLength - state.timeElapsed
+    // score
+    scoreDisplay.textContent = state.score
+    // wpm
+    wpmDisplay.textContent = (state.score / (state.timeElapsed / 60)).toFixed(2)
+}
+
+// start the timer
+    function startClock(){
+        // for every secs
+        setInterval(function(){
+            state.timeElapsed += 1
+
+            // calculate the stats
+            renderStats()
+            // check if the game has ended
+            if(state.timeElapsed === state.gameLength){
+                // when game ended, alert WPM to the user
+                alert("Game Over, Congratulations ! WPM is: " + wpmDisplay.textContent)
+                // refresh the page
+                window.location.reload();
+            }
+
+        }, 1000)
+
+    }
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
